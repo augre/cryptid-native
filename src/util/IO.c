@@ -58,6 +58,11 @@ void writeCipherTextToFiles(CipherTextTuple* ciphertext)
 
         fclose(fp);
     }
+    printf("beleirt:\n");
+    printf("VLength: %lu\n", ciphertext->cipherVLength);
+    printf("%s\n", ciphertext->cipherV);
+    printf("%lu\n", ciphertext->cipherWLength);
+    printf("%s\n", ciphertext->cipherW);
 
     fp = fopen ("CT/cipherU","w+");
     if (fp != NULL) {
@@ -135,6 +140,8 @@ AffinePoint readPrivateKeyFromFiles()
 
     privateKey = affine_init(x, y);
 
+    printf ("privateX  read in  "); mpz_out_str (stdout, BASE, privateKey.x); printf("\n");
+    printf ("privateY  read in  "); mpz_out_str (stdout, BASE, privateKey.y); printf("\n");
 
     return privateKey;
 }
@@ -166,6 +173,11 @@ CipherTextTuple readCipherTextFromFile()
     }
 
     else printf("Can't open file");
+    printf("kiolvasott:\n");
+    printf("VLength: %lu\n", ciphertext.cipherVLength);
+    printf("%s\n", ciphertext.cipherV);
+    printf("%lu\n", ciphertext.cipherWLength);
+    printf("%s\n", ciphertext.cipherW);
 
     mpz_t x, y;
     mpz_inits(x, y, NULL);
@@ -179,5 +191,7 @@ CipherTextTuple readCipherTextFromFile()
 
     ciphertext = cipherTextTuple_init(cipherU, cipherV, cipherVLength, cipherW, cipherWLength);
 
+    printf ("  read in  "); mpz_out_str (stdout, BASE, ciphertext.cipherU.x); printf("\n");
+    printf ("  read in  "); mpz_out_str (stdout, BASE, ciphertext.cipherU.y); printf("\n");
     return ciphertext;
 }
