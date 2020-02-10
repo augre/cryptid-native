@@ -12,46 +12,43 @@
 
 int main()
 {
-    const char *message = "gecislofasz";
+    const char *message = "Ironic.";
     const char *identity = "darth.plagueis@sith.com";
 
-//    PublicParameters* publicParameters = malloc(sizeof (PublicParameters));
-//    mpz_t masterSecret;
-//    mpz_init(masterSecret);
-//    mpz_init(publicParameters->q);
-//    if (CRYPTID_SUCCESS != cryptid_setup(LOWEST, publicParameters, masterSecret))
-//    {
-//        printf("Setup failed\n");
-//        return -1;
-//    }
-
-    PublicParameters publicParameters = readPublicParFromFile();
-    (validation_isPublicParametersValid(publicParameters)) ? (printf("PublicParameters valid\n")) : (printf("PublicParameters  invalid\n"));
-
+    PublicParameters* publicParameters = malloc(sizeof (PublicParameters));
+    mpz_t masterSecret;
+    mpz_init(masterSecret);
+    mpz_init(publicParameters->q);
+    if (CRYPTID_SUCCESS != cryptid_setup(LOWEST, publicParameters, masterSecret))
+    {
+        printf("Setup failed\n");
+        return -1;
+    }
 
     CipherTextTuple* ciphertext = malloc(sizeof (CipherTextTuple));
-    if (CRYPTID_SUCCESS != cryptid_encrypt(ciphertext, message, strlen(message), identity, strlen(identity), publicParameters))
+    if (CRYPTID_SUCCESS != cryptid_encrypt(ciphertext, message, strlen(message), identity, strlen(identity), *publicParameters))
     {
         printf("Encrypt failed\n");
         return -1;
     }
 
-//    AffinePoint privateKey;
-//    if (CRYPTID_SUCCESS != cryptid_extract(&privateKey, identity, strlen(identity), *publicParameters, masterSecret))
-//    {
-//        printf("Extract failed\n");
-//        return -1;
-//    }
+    AffinePoint privateKey;
+    if (CRYPTID_SUCCESS != cryptid_extract(&privateKey, identity, strlen(identity), *publicParameters, masterSecret))
+    {
+        printf("Extract failed\n");
+        return -1;
+    }
 
     writeCipherTextToFiles(ciphertext);
-//    writePublicParToFiles(publicParameters);
-//    writePrivateKeyToFiles(privateKey);
+    writePublicParToFiles(publicParameters);
+    writePrivateKeyToFiles(privateKey);
 
-//    mpz_clears(publicParameters.q, NULL);
-//    affine_destroy(publicParameters.pointP);
-//    affine_destroy(publicParameters.pointPpublic);
-//    ellipticCurve_destroy(publicParameters.ellipticCurve);
-//    free(publicParameters);
+    affine_destroy(privateKey);
+    mpz_clears(publicParameters->q, masterSecret, NULL);
+    affine_destroy(publicParameters->pointP);
+    affine_destroy(publicParameters->pointPpublic);
+    ellipticCurve_destroy(publicParameters->ellipticCurve);
+    free(publicParameters);
 
     return 0;
 
