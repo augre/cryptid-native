@@ -59,9 +59,9 @@ void writeCipherTextToFiles(CipherTextTuple* ciphertext)
         fclose(fp);
     }
     printf("beleirt:\n");
-    printf("VLength: %lu\n", ciphertext->cipherVLength);
+    printf("VLength: %zd\n", ciphertext->cipherVLength);
     printf("%s\n", ciphertext->cipherV);
-    printf("%lu\n", ciphertext->cipherWLength);
+    printf("%zd\n", ciphertext->cipherWLength);
     printf("%s\n", ciphertext->cipherW);
 
     fp = fopen ("CT/cipherU","w+");
@@ -174,9 +174,9 @@ CipherTextTuple readCipherTextFromFile()
 
     else printf("Can't open file");
     printf("kiolvasott:\n");
-    printf("VLength: %lu\n", ciphertext.cipherVLength);
+    printf("VLength: %zd\n", ciphertext.cipherVLength);
     printf("%s\n", ciphertext.cipherV);
-    printf("%lu\n", ciphertext.cipherWLength);
+    printf("%zd\n", ciphertext.cipherWLength);
     printf("%s\n", ciphertext.cipherW);
 
     mpz_t x, y;
