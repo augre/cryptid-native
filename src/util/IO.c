@@ -143,19 +143,24 @@ CipherTextTuple readCipherTextFromFile()
 {
     CipherTextTuple ciphertext;
 
+    unsigned char* cipherV;
+    size_t cipherVLength;
+
+    unsigned char* cipherW;
+    size_t cipherWLength;
+
     FILE * fp;
 
     fp = fopen("CT/cipher", "rb");
     if (fp != NULL) {
 
-        fread(&ciphertext.cipherVLength, sizeof(ciphertext.cipherVLength), 1, fp);
+        fread(&cipherVLength, sizeof(cipherVLength), 1, fp);
+        cipherV = (unsigned char*)malloc(cipherVLength * sizeof(unsigned char) + 1);
+        fread(cipherV, cipherVLength + 1, 1, fp);
 
-	ciphertext.cipherV = malloc(ciphertext.cipherVLength + 1);
-        fread(ciphertext.cipherV, ciphertext.cipherVLength + 1, 1, fp);
-        fread(&ciphertext.cipherWLength, sizeof(ciphertext.cipherWLength), 1, fp);
-
-	ciphertext.cipherW = malloc(ciphertext.cipherWLength + 1);
-        fread(ciphertext.cipherW, ciphertext.cipherWLength + 1, 1, fp);
+        fread(&cipherWLength, sizeof(cipherWLength), 1, fp);
+        cipherW = (unsigned char*)malloc(cipherWLength * sizeof(unsigned char) + 1);
+        fread(cipherW, cipherWLength + 1, 1, fp);
 
         fclose(fp);
     }
@@ -170,7 +175,9 @@ CipherTextTuple readCipherTextFromFile()
         fclose(fp);
     }
 
-    ciphertext.cipherU = affine_init(x, y);
+    AffinePoint cipherU = affine_init(x, y);
+
+    ciphertext = cipherTextTuple_init(cipherU, cipherV, cipherVLength, cipherW, cipherWLength);
 
     return ciphertext;
 }
