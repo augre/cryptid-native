@@ -50,11 +50,7 @@ void writeCipherTextToFiles(CipherTextTuple* ciphertext)
     fp = fopen ("CT/cipher","wb");
     if (fp != NULL) {
 
-        fwrite(&ciphertext->cipherVLength, sizeof(ciphertext->cipherVLength), 1, fp);
-        fwrite(ciphertext->cipherV, ciphertext->cipherVLength + 1, 1, fp);
-
-        fwrite(&ciphertext->cipherWLength, sizeof(ciphertext->cipherWLength),1, fp);
-        fwrite(ciphertext->cipherW, ciphertext->cipherWLength + 1, 1, fp);
+	fprintf(fp, "%zd\n%s\n%zd\n%s", ciphertext->cipherVLength, ciphertext->cipherV, ciphertext->cipherWLength, ciphertext->cipherW);
 
         fclose(fp);
     }
@@ -147,31 +143,18 @@ AffinePoint readPrivateKeyFromFiles()
 CipherTextTuple readCipherTextFromFile()
 {
     CipherTextTuple ciphertext;
+    size_t cipherVLength, cipherWLength;
+    unsigned char  cipherV[50], cipherW[50];
 
     FILE * fp;
 
     fp = fopen("CT/cipher", "rb");
     if (fp != NULL) {
-
-        fread(&ciphertext.cipherVLength, sizeof(ciphertext.cipherVLength), 1, fp);
-        printf("VLength: %zd\n", ciphertext.cipherVLength);
-        printf("sizeof VLength: %zd\n", sizeof(ciphertext.cipherVLength));
-
-	ciphertext.cipherV = malloc(ciphertext.cipherVLength + 1);
-        fread(ciphertext.cipherV, ciphertext.cipherVLength + 1, 1, fp);
-        printf("%s\n", ciphertext.cipherV);
-        fread(&ciphertext.cipherWLength, sizeof(ciphertext.cipherWLength), 1, fp);
-        printf("%zd\n", ciphertext.cipherWLength);
-
-	ciphertext.cipherW = malloc(ciphertext.cipherWLength + 1);
-        fread(ciphertext.cipherW, ciphertext.cipherWLength + 1, 1, fp);
-        printf("%s\n", ciphertext.cipherW);
-
+	fscanf(fp, "%zd\n%s\n%zd\n%s", &cipherVLength, cipherV, &cipherWLength, cipherW);
         fclose(fp);
     }
-
     else printf("Can't open file");
-    printf("kiolvasott:\n");
+    printf("%zd\n%s\n%zd\n%s\n", cipherVLength, cipherV, cipherWLength, cipherW);
 
     mpz_t x, y;
     mpz_inits(x, y, NULL);
@@ -180,8 +163,7 @@ CipherTextTuple readCipherTextFromFile()
         gmp_fscanf(fp,"%Zd\n%Zd\n", &x, &y);
         fclose(fp);
     }
-
-    ciphertext.cipherU = affine_init(x, y);
+    ciphertext = cipherTextTuple_init(affine_init(x, y), cipherV, cipherVLength, cipherW, cipherWLength);
 
     return ciphertext;
 }
