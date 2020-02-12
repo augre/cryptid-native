@@ -8,7 +8,25 @@
 #include "util/Utils.h"
 #include "util/IO.h"
 
-const int BASE = 10;
+unsigned char * readBinaryFileToMemory(FILE * fp)
+{
+    unsigned char * buffer = 0;
+    long length;
+    
+    if (fp)
+    {
+        fseek (fp, 0, SEEK_END);
+        length = ftell (fp);
+        fseek (fp, 0, SEEK_SET);
+        buffer = malloc (length);
+        if (buffer)
+        {
+            fread (buffer, 1, length, fp);
+        }
+        fclose (fp);
+    }
+    return buffer;
+}
 
 void writePublicParToFiles(PublicParameters* publicParameters)
 {
@@ -47,17 +65,27 @@ void writeCipherTextToFiles(CipherTextTuple* ciphertext)
     }
 
 
-    fp = fopen ("CT/cipher","wb");
+    fp = fopen ("CT/cipherV","wb");
     if (fp != NULL) {
 
-	fprintf(fp, "%zd\n%s\n%zd\n%s", ciphertext->cipherVLength, ciphertext->cipherV, ciphertext->cipherWLength, ciphertext->cipherW);
+//	fprintf(fp, "%zd\n%s", ciphertext->cipherVLength, ciphertext->cipherV);
+	fprintf(fp, "%s", ciphertext->cipherV);
 
         fclose(fp);
     }
+    fp = fopen ("CT/cipherW","wb");
+    if (fp != NULL) {
+
+//	fprintf(fp, "%zd\n%s", ciphertext->cipherWLength, ciphertext->cipherW);
+	fprintf(fp, "%s", ciphertext->cipherW);
+
+        fclose(fp);
+    }
+
     printf("beleirt:\n");
-    printf("VLength: %zd\n", ciphertext->cipherVLength);
+//    printf("VLength: %zd\n", ciphertext->cipherVLength);
     printf("%s\n", ciphertext->cipherV);
-    printf("%zd\n", ciphertext->cipherWLength);
+//    printf("%zd\n", ciphertext->cipherWLength);
     printf("%s\n", ciphertext->cipherW);
 
     fp = fopen ("CT/cipherU","w+");
@@ -143,17 +171,31 @@ AffinePoint readPrivateKeyFromFiles()
 CipherTextTuple readCipherTextFromFile()
 {
     CipherTextTuple ciphertext;
-    size_t cipherVLength, cipherWLength;
-    unsigned char  cipherV[50], cipherW[50];
+    size_t cipherVLength = 20, cipherWLength = 7;
+    unsigned char *  cipherV, *cipherW;
+//    int i = 0;
 
     FILE * fp;
 
-    fp = fopen("CT/cipher", "rb");
+    fp = fopen("CT/cipherV", "rb");
     if (fp != NULL) {
-	fscanf(fp, "%zd\n%s\n%zd\n%s", &cipherVLength, cipherV, &cipherWLength, cipherW);
-        fclose(fp);
+        cipherV = readBinaryFileToMemory(fp);
+//	fscanf(fp, "%zd", &cipherVLength);
+//	while(fscanf(fp, "%c", &cipherV[i]) != EOF) i++;
+//        fclose(fp);
     }
     else printf("Can't open file");
+
+//    i = 0;
+    fp = fopen("CT/cipherW", "rb");
+    if (fp != NULL) {
+        cipherW = readBinaryFileToMemory(fp);
+//	fscanf(fp, "%zd", &cipherWLength);
+//	while(fscanf(fp, "%c", &cipherW[i]) != EOF) i++;
+//        fclose(fp);
+    }
+    else printf("Can't open file");
+
     printf("%zd\n%s\n%zd\n%s\n", cipherVLength, cipherV, cipherWLength, cipherW);
 
     mpz_t x, y;
