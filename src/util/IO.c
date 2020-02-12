@@ -8,7 +8,25 @@
 #include "util/Utils.h"
 #include "util/IO.h"
 
-const int BASE = 10;
+unsigned char * readBinaryFileToMemory(FILE * fp)
+{
+    unsigned char * buffer = 0;
+    long length;
+    
+    if (fp)
+    {
+        fseek (fp, 0, SEEK_END);
+        length = ftell (fp);
+        fseek (fp, 0, SEEK_SET);
+        buffer = malloc (length);
+        if (buffer)
+        {
+            fread (buffer, 1, length, fp);
+        }
+        fclose (fp);
+    }
+    return buffer;
+}
 
 void writePublicParToFiles(PublicParameters* publicParameters)
 {
@@ -47,14 +65,19 @@ void writeCipherTextToFiles(CipherTextTuple* ciphertext)
     }
 
 
-    fp = fopen ("CT/cipher","wb");
+    fp = fopen ("CT/cipherV","wb");
     if (fp != NULL) {
 
-        fwrite(&ciphertext->cipherVLength, sizeof(ciphertext->cipherVLength), 1, fp);
-        fwrite(ciphertext->cipherV, ciphertext->cipherVLength + 1, 1, fp);
+//	fprintf(fp, "%zd\n%s", ciphertext->cipherVLength, ciphertext->cipherV);
+	fprintf(fp, "%s", ciphertext->cipherV);
 
-        fwrite(&ciphertext->cipherWLength, sizeof(ciphertext->cipherWLength),1, fp);
-        fwrite(ciphertext->cipherW, ciphertext->cipherWLength + 1, 1, fp);
+        fclose(fp);
+    }
+    fp = fopen ("CT/cipherW","wb");
+    if (fp != NULL) {
+
+//	fprintf(fp, "%zd\n%s", ciphertext->cipherWLength, ciphertext->cipherW);
+	fprintf(fp, "%s", ciphertext->cipherW);
 
         fclose(fp);
     }
@@ -62,6 +85,12 @@ void writeCipherTextToFiles(CipherTextTuple* ciphertext)
     printf("VLength: %zd\n", ciphertext->cipherVLength);
     printf("%s\n", ciphertext->cipherV);
     printf("%zd\n", ciphertext->cipherWLength);
+    printf("%s\n", ciphertext->cipherW);
+
+    printf("beleirt:\n");
+//    printf("VLength: %zd\n", ciphertext->cipherVLength);
+    printf("%s\n", ciphertext->cipherV);
+//    printf("%zd\n", ciphertext->cipherWLength);
     printf("%s\n", ciphertext->cipherW);
 
     fp = fopen ("CT/cipherU","w+");
@@ -149,6 +178,9 @@ AffinePoint readPrivateKeyFromFiles()
 CipherTextTuple readCipherTextFromFile()
 {
     CipherTextTuple ciphertext;
+    size_t cipherVLength = 20, cipherWLength = 7;
+    unsigned char *  cipherV, *cipherW;
+//    int i = 0;
 
     unsigned char* cipherV;
     size_t cipherVLength;
@@ -158,26 +190,26 @@ CipherTextTuple readCipherTextFromFile()
 
     FILE * fp;
 
-    fp = fopen("CT/cipher", "rb");
-    if (fp != NULL) {
-
-        fread(&cipherVLength, sizeof(cipherVLength), 1, fp);
-        cipherV = (unsigned char*)malloc(cipherVLength * sizeof(unsigned char) + 1);
-        fread(cipherV, cipherVLength + 1, 1, fp);
-
-        fread(&cipherWLength, sizeof(cipherWLength), 1, fp);
-        cipherW = (unsigned char*)malloc(cipherWLength * sizeof(unsigned char) + 1);
-        fread(cipherW, cipherWLength + 1, 1, fp);
-
-        fclose(fp);
+    fp = fopen("CT/cipherV", "rb");
+    if (fp != NULL)
+    {
+        cipherV = readBinaryFileToMemory(fp);
     }
+    else printf("Can't open file");
 
+    fp = fopen("CT/cipherW", "rb");
+    if (fp != NULL)
+    {
+        cipherW = readBinaryFileToMemory(fp);
+    }
     else printf("Can't open file");
     printf("kiolvasott:\n");
     printf("VLength: %zd\n", ciphertext.cipherVLength);
     printf("%s\n", ciphertext.cipherV);
     printf("%zd\n", ciphertext.cipherWLength);
     printf("%s\n", ciphertext.cipherW);
+
+    printf("%zd\n%s\n%zd\n%s\n", cipherVLength, cipherV, cipherWLength, cipherW);
 
     mpz_t x, y;
     mpz_inits(x, y, NULL);
@@ -187,9 +219,8 @@ CipherTextTuple readCipherTextFromFile()
         fclose(fp);
     }
 
-    AffinePoint cipherU = affine_init(x, y);
+    ciphertext = cipherTextTuple_init(affine_init(x, y), cipherV, cipherVLength, cipherW, cipherWLength);
 
-    ciphertext = cipherTextTuple_init(cipherU, cipherV, cipherVLength, cipherW, cipherWLength);
 
     printf ("  read in  "); mpz_out_str (stdout, BASE, ciphertext.cipherU.x); printf("\n");
     printf ("  read in  "); mpz_out_str (stdout, BASE, ciphertext.cipherU.y); printf("\n");
