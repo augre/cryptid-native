@@ -81,6 +81,11 @@ void writeCipherTextToFiles(CipherTextTuple* ciphertext)
 
         fclose(fp);
     }
+    printf("beleirt:\n");
+    printf("VLength: %zd\n", ciphertext->cipherVLength);
+    printf("%s\n", ciphertext->cipherV);
+    printf("%zd\n", ciphertext->cipherWLength);
+    printf("%s\n", ciphertext->cipherW);
 
     printf("beleirt:\n");
 //    printf("VLength: %zd\n", ciphertext->cipherVLength);
@@ -164,6 +169,8 @@ AffinePoint readPrivateKeyFromFiles()
 
     privateKey = affine_init(x, y);
 
+    printf ("privateX  read in  "); mpz_out_str (stdout, BASE, privateKey.x); printf("\n");
+    printf ("privateY  read in  "); mpz_out_str (stdout, BASE, privateKey.y); printf("\n");
 
     return privateKey;
 }
@@ -175,26 +182,32 @@ CipherTextTuple readCipherTextFromFile()
     unsigned char *  cipherV, *cipherW;
 //    int i = 0;
 
+    unsigned char* cipherV;
+    size_t cipherVLength;
+
+    unsigned char* cipherW;
+    size_t cipherWLength;
+
     FILE * fp;
 
     fp = fopen("CT/cipherV", "rb");
-    if (fp != NULL) {
+    if (fp != NULL)
+    {
         cipherV = readBinaryFileToMemory(fp);
-//	fscanf(fp, "%zd", &cipherVLength);
-//	while(fscanf(fp, "%c", &cipherV[i]) != EOF) i++;
-//        fclose(fp);
     }
     else printf("Can't open file");
 
-//    i = 0;
     fp = fopen("CT/cipherW", "rb");
-    if (fp != NULL) {
+    if (fp != NULL)
+    {
         cipherW = readBinaryFileToMemory(fp);
-//	fscanf(fp, "%zd", &cipherWLength);
-//	while(fscanf(fp, "%c", &cipherW[i]) != EOF) i++;
-//        fclose(fp);
     }
     else printf("Can't open file");
+    printf("kiolvasott:\n");
+    printf("VLength: %zd\n", ciphertext.cipherVLength);
+    printf("%s\n", ciphertext.cipherV);
+    printf("%zd\n", ciphertext.cipherWLength);
+    printf("%s\n", ciphertext.cipherW);
 
     printf("%zd\n%s\n%zd\n%s\n", cipherVLength, cipherV, cipherWLength, cipherW);
 
@@ -205,7 +218,11 @@ CipherTextTuple readCipherTextFromFile()
         gmp_fscanf(fp,"%Zd\n%Zd\n", &x, &y);
         fclose(fp);
     }
+
     ciphertext = cipherTextTuple_init(affine_init(x, y), cipherV, cipherVLength, cipherW, cipherWLength);
 
+
+    printf ("  read in  "); mpz_out_str (stdout, BASE, ciphertext.cipherU.x); printf("\n");
+    printf ("  read in  "); mpz_out_str (stdout, BASE, ciphertext.cipherU.y); printf("\n");
     return ciphertext;
 }
