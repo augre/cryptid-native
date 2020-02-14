@@ -8,6 +8,8 @@
 #include "util/Utils.h"
 #include "util/IO.h"
 
+const int BASE = 10;
+
 unsigned char * readBinaryFileToMemory(FILE * fp)
 {
     unsigned char * buffer = 0;
@@ -181,12 +183,6 @@ CipherTextTuple readCipherTextFromFile()
     size_t cipherVLength = 20, cipherWLength = 7;
     unsigned char *  cipherV, *cipherW;
 //    int i = 0;
-
-    unsigned char* cipherV;
-    size_t cipherVLength;
-
-    unsigned char* cipherW;
-    size_t cipherWLength;
 
     FILE * fp;
 
