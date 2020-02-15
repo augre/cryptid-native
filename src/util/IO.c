@@ -200,10 +200,10 @@ CipherTextTuple readCipherTextFromFile()
     }
     else printf("Can't open file");
     printf("kiolvasott:\n");
-    printf("VLength: %zd\n", ciphertext.cipherVLength);
-    printf("%s\n", ciphertext.cipherV);
-    printf("%zd\n", ciphertext.cipherWLength);
-    printf("%s\n", ciphertext.cipherW);
+    printf("VLength: %zd\n", cipherVLength);
+    printf("%s\n", cipherV);
+    printf("%zd\n", cipherWLength);
+    printf("%s\n", cipherW);
 
     printf("%zd\n%s\n%zd\n%s\n", cipherVLength, cipherV, cipherWLength, cipherW);
 
