@@ -12,7 +12,14 @@
 
 int main()
 {
-    const char *message = "Ironic.";
+    FILE * fp;
+    const char *message;
+    fp = fopen ("message","rb");
+    if (fp != NULL)
+    {
+        message = readBinaryFileToMemory(fp);
+        fclose(fp);
+    }
     const char *identity = "darth.plagueis@sith.com";
 
     PublicParameters* publicParameters = malloc(sizeof (PublicParameters));

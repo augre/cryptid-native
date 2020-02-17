@@ -12,8 +12,15 @@
 
 int main()
 {
-    const char *message = "Ironic.";
     const char *identity = "darth.plagueis@sith.com";
+    const char *message;
+    FILE * fp;
+    fp = fopen ("message","rb");
+    if (fp != NULL)
+    {
+        message = readBinaryFileToMemory(fp);
+        fclose(fp);
+    }
 
 
     PublicParameters publicParameters = readPublicParFromFile();

@@ -8,6 +8,12 @@
 #include "complex/Complex.h"
 
 /**
+ * Load binary file into memory
+ * @param fp file pointer rb
+ */
+unsigned char * readBinaryFileToMemory(FILE * fp);
+
+/**
  * Writes the public parameters to the following files: PP.ellipticCurve.a  PP.ellipticCurve.b  PP.ellipticCurve.fieldOrder  PP.hashf  PP.pointPpublic.x  PP.pointPpublic.y  PP.pointP.x  PP.pointP.y  PP.q in the folder ./PP.
  * @param publicParameters The parameter storing the public parameters.
  */

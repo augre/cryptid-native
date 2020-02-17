@@ -67,6 +67,11 @@ void writeCipherTextToFiles(CipherTextTuple* ciphertext)
     }
 
 
+    fp = fopen ("CT/cipherL","w+");
+    if (fp != NULL) {
+        fprintf(fp, "%zd\n%zd\n",  ciphertext->cipherVLength, ciphertext->cipherWLength);
+        fclose(fp);
+    }
     fp = fopen ("CT/cipherV","wb");
     if (fp != NULL) {
 
@@ -180,12 +185,17 @@ AffinePoint readPrivateKeyFromFiles()
 CipherTextTuple readCipherTextFromFile()
 {
     CipherTextTuple ciphertext;
-    size_t cipherVLength = 20, cipherWLength = 7;
+    size_t cipherVLength, cipherWLength;
     unsigned char *  cipherV, *cipherW;
 //    int i = 0;
 
     FILE * fp;
 
+    fp = fopen ("CT/cipherL","r");
+    if (fp != NULL) {
+        fscanf(fp, "%zd\n%zd\n",  &cipherVLength, &cipherWLength);
+        fclose(fp);
+    }
     fp = fopen("CT/cipherV", "rb");
     if (fp != NULL)
     {
