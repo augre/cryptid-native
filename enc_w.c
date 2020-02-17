@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/mman.h>
 
 #include "gmp.h"
 
@@ -12,14 +15,16 @@
 
 int main()
 {
-    FILE * fp;
+    //FILE * fp;
     const char *message;
-    fp = fopen ("message","rb");
-    if (fp != NULL)
-    {
-        message = readBinaryFileToMemory(fp);
-        fclose(fp);
-    }
+    int fp = open ("message", O_RDONLY);
+//    if (fp != NULL)
+//    {
+        int len = lseek(fp, 0, SEEK_END);
+        message = mmap(0, len, PROT_READ, MAP_PRIVATE, fp, 0);
+        close(fp);
+//        fclose(fp);
+//    }
     const char *identity = "darth.plagueis@sith.com";
 
     PublicParameters* publicParameters = malloc(sizeof (PublicParameters));
