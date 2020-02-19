@@ -20,12 +20,13 @@ unsigned char * readBinaryFileToMemory(FILE * fp)
         fseek (fp, 0, SEEK_END);
         length = ftell (fp);
         fseek (fp, 0, SEEK_SET);
-        buffer = malloc (length);
+        buffer = malloc (length + 1);
         if (buffer)
         {
             fread (buffer, 1, length, fp);
         }
         fclose (fp);
+	buffer[length] = '\0';
     }
     return buffer;
 }
