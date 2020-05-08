@@ -13,11 +13,11 @@
 #include "util/IO.h"
 
 
-int main()
+int main(int argc, char *argv[])
 {
     const char *identity = "darth.plagueis@sith.com";
     const char *message;
-    int fp = open ("message", O_RDONLY);
+    int fp = open (argv[1], O_RDONLY);
     
     int len = lseek(fp, 0, SEEK_END);
     message = mmap(0, len, PROT_READ, MAP_PRIVATE, fp, 0);

@@ -26,10 +26,15 @@ int main()
     if (CRYPTID_SUCCESS != cryptid_decrypt(&plaintext, privateKey, ciphertext, publicParameters))
     {
         printf("Decrypt failed\n");
+	remove("dec_result");
         return -1;
     }
 
     printf("Plaintext:\n%s\n", plaintext);
+    FILE * fp;
+    fp = fopen ("dec_result","w+");
+    fprintf(fp, "%s", plaintext);
+    fclose(fp);
 
     free(plaintext);
     cipherTextTuple_destroy(ciphertext);
@@ -39,6 +44,6 @@ int main()
     affine_destroy(publicParameters.pointPpublic);
     ellipticCurve_destroy(publicParameters.ellipticCurve);
 
-    return 0;
+    return 2;
 
 }
